@@ -102,7 +102,7 @@ class GameObject:
             return
         self.delete()
         self.setPosition(c1, r1, c2, r2, sn)
-        time.sleep(0.1)
+        
 
     ##
     # @brief 図形を動かす
