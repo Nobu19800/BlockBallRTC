@@ -166,7 +166,11 @@ class GameThread (OpenRTM_aist.Task):
         
 
         self._period = 0.1
-
+        
+        guard = None
+        if OOoRTC.calc_comp:
+            guard = OpenRTM_aist.ScopedLock(OOoRTC.calc_comp._mutex)
+            
         self.calc.document.addActionLock()
         self.blocks = self.CreateBlocks()
 
@@ -188,8 +192,11 @@ class GameThread (OpenRTM_aist.Task):
         
 
         self.calc.document.removeActionLock()
-        
 
+        if guard:
+            del guard
+        
+        time.sleep(0.1)
         self.exec_flag = True
 
         
@@ -551,7 +558,7 @@ def StartGame():
     if m_gamethread == None:
         m_gamethread = GameThread()
         m_gamethread.activate()
-        MyMsgBox("test","test")
+        
 
 ##
 # @brief ゲーム終了
