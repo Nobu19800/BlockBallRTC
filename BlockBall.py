@@ -165,7 +165,7 @@ class GameThread (OpenRTM_aist.Task):
         
         
 
-        self._period = 0.1
+        self._period = 0.01
         
         guard = None
         if OOoRTC.calc_comp:
@@ -299,7 +299,10 @@ class GameThread (OpenRTM_aist.Task):
             if guard:
                 del guard
             
-            time.sleep(0.1)
+            t1_ = OpenRTM_aist.Time()
+            slptm_ = self._period - (t1_ - t0_).getTime().toDouble()
+            if slptm_ > 0:
+                time.sleep(slptm_)
 
         
         return 0
