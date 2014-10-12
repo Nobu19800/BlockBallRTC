@@ -78,6 +78,7 @@ class GameObject:
         self.sn = ""
         self.vx = 0
         self.vy = 0
+        self.va = 0
         self.cell2 = None
 
     ##
@@ -218,42 +219,74 @@ class GameThread (OpenRTM_aist.Task):
         blocky2 = block.r2 + block.vy
 
         
+        
 
         xf = 0
         xflag = False
+        
         if ballx1 < blockx1 and ballx2 > blockx1:
             xf = -2
             xflag = True
+            
         if ballx1 < blockx2 and ballx2 > blockx2:
             xf = 2
             xflag = True
+            
         if ballx1 > blockx1 and ballx2 < blockx2:
             xf = 0
             xflag = True
+            
         if ballx1 < blockx1 and ballx2 > blockx2:
             xf = 0
             xflag = True
+            
         yf = 0
         yflag = False
         if bally1 < blocky1 and bally2 > blocky1:
             yf = -2
             yflag = True
+            
+            
         if bally1 < blocky2 and bally2 > blocky2:
             yf = 2
             yflag = True
+            
+                
         if bally1 > blocky1 and bally2 < blocky2:
             yf = 0
             yflag = True
+            
+                
         if bally1 < blocky1 and bally2 > blocky2:
             yf = 0
             yflag = True
             
         if xflag and yflag:
+            """if yf > 0:
+                ball.vx += int(ball.va)
+                ball.va -= ball.vx*0.5
+            if yf < 0:
+                ball.vx -= int(ball.va)
+                ball.va += ball.vx*0.5
+            if xf < 0:
+                ball.vy += int(ball.va)
+                ball.va -= ball.vy*0.5
+            if xf > 0:
+                ball.vy -= int(ball.va)
+                ball.va += ball.vy*0.5"""
+
             
-            if xf != 0:
-                ball.vx = xf
-            if yf != 0:
-                ball.vy = yf
+            
+            if xf < 0 and ball.vx > 0:
+                ball.vx = -ball.vx
+            elif xf > 0 and ball.vx < 0:
+                ball.vx = -ball.vx
+            
+            if yf < 0 and ball.vy > 0:
+                ball.vy = -ball.vy
+            elif yf > 0 and ball.vy < 0:
+                ball.vy = -ball.vy
+                
             
             return True
         return False
@@ -286,12 +319,21 @@ class GameThread (OpenRTM_aist.Task):
                     
             if self.ball.c1 + self.ball.vx < 0:
                 self.ball.vx = -self.ball.vx
+                self.ball.vy += int(self.ball.va)
+                self.ball.va -= self.ball.vy*0.2
             if self.ball.c2 + self.ball.vx > 9*24:
                 self.ball.vx = -self.ball.vx
+                self.ball.vy -= int(self.ball.va)
+                self.ball.va += self.ball.vy*0.2
             if self.ball.r1 + self.ball.vy < 0:
                 self.ball.vy = -self.ball.vy
+                self.ball.vx -= int(self.ball.va)
+                self.ball.va += self.ball.vx*0.2
             if self.ball.r2 + self.ball.vy > 10*8:
                 self.ball.vy = -self.ball.vy
+                self.ball.vx += int(self.ball.va)
+                self.ball.va -= self.ball.vx*0.2
+                
             
             self.ball.move(self.ball.vx, self.ball.vy)
             
@@ -317,6 +359,7 @@ class GameThread (OpenRTM_aist.Task):
         for i in range(0, len(vr)):
             for j in range(0, len(vr[i])):
                 if vr[i][j] == 1:
+                    time.sleep(0.1)
                     obj = GameObject(self, 9, 1, 32, 8, "Sheet3")
                     obj.setPosition(24*i+1, 8*j+1, 24*i+24, 8*j+8, "Sheet2")
                     blocks.append(obj)
